@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:ngwiro/components/cards.dart';
 import 'package:ngwiro/service/data_store.dart';
 
+import 'map.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -25,11 +27,11 @@ class _HomeScreenState extends State<HomeScreen> {
           return <Widget>[
             SliverAppBar(
               leading: const SizedBox(),
-              title: const Text(
-                'Ngwiro',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
+              expandedHeight: 150.0,
+              flexibleSpace: const FlexibleSpaceBar(
+                title: Text(
+                  'Ngwiro',
+                  style: TextStyle(color: Colors.black),
                 ),
               ),
               floating: true,
@@ -195,6 +197,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             return Column(
                               children: ((snap.data ?? []) as List)
                                   .map((hc) => ListTile(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(builder: (context) => const CenterMap()),
+                                          );
+                                        },
                                         title: Text(hc['name']),
                                         subtitle: Text(
                                             '${hc['district']['name']} - ${hc['phone_number']}'),

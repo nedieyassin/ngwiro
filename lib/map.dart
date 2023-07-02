@@ -2,49 +2,136 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:ngwiro/service/data_store.dart';
 
-class MapSample extends StatefulWidget {
-  const MapSample({super.key});
+class CenterMap extends StatefulWidget {
+  const CenterMap({super.key});
 
   @override
-  State<MapSample> createState() => MapSampleState();
+  State<CenterMap> createState() => CenterMapState();
 }
 
-class MapSampleState extends State<MapSample> {
+class CenterMapState extends State<CenterMap> {
+  DataStore store = DataStore();
+  Set<Marker> markers = {};
   final Completer<GoogleMapController> _controller =
-  Completer<GoogleMapController>();
+      Completer<GoogleMapController>();
 
-  static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
-    zoom: 14.4746,
+  static const CameraPosition _kSalimaCords = CameraPosition(
+    target: LatLng(-13.77952531821596, 34.4587470714553),
+    zoom: 10,
   );
 
-  static const CameraPosition _kLake = CameraPosition(
-      bearing: 192.8334901395799,
-      target: LatLng(37.43296265331129, -122.08832357078792),
-      tilt: 59.440717697143555,
-      zoom: 19.151926040649414);
+  @override
+  void initState() {
+    super.initState();
+    getMarkers();
+  }
+
+  getMarkers() async {
+    var hcs = await store.getHealthCenters();
+    setState(() {
+      markers.addAll(hcs!
+          .where((hc) => hc['lat'] != null && hc['long'] != null)
+          .map<Marker>((hc) {
+        return Marker(
+          markerId: MarkerId('${hc['id']}'),
+          position: LatLng(
+            double.tryParse(hc['lat']) ?? 0,
+            double.tryParse(hc['long']) ?? 0,
+          ),
+          infoWindow: InfoWindow(title: hc['name'], snippet: hc['phone_number']),
+          icon: BitmapDescriptor.defaultMarker,
+        );
+      }).toSet());
+    });
+    // });
+  }
+
+  // -13.77952531821596, 34.4587470714553
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Health Centers'),
+      ),
       body: GoogleMap(
-        mapType: MapType.hybrid,
-        initialCameraPosition: _kGooglePlex,
+        mapType: MapType.normal,
+        initialCameraPosition: _kSalimaCords,
+        mapToolbarEnabled: true,
+        myLocationButtonEnabled: true,
+        compassEnabled: true,
+        markers: markers,
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: _goToTheLake,
-        label: const Text('To the lake!'),
-        icon: const Icon(Icons.directions_boat),
+        onPressed: () {
+          showModalBottomSheet<void>(
+            context: context,
+            builder: (BuildContext context) {
+              return Container(
+                color: Colors.white,
+                child: FutureBuilder(
+                    future: store.getHealthCenters(),
+                    builder: (context, snap) {
+                      if (snap.hasData) {
+                        return SingleChildScrollView(
+                          child: Column(
+                            children: ((snap.data ?? []) as List)
+                                .map((hc) => ListTile(
+                                      onTap: () {},
+                                      title: Text(hc['name']),
+                                      subtitle: Text(
+                                          '${hc['district']['name']} - ${hc['phone_number']}'),
+                                      trailing: IconButton(
+                                        onPressed: () {
+                                          if (hc['lat'] != null &&
+                                              hc['long'] != null) {
+                                            _goTo(
+                                              lat: double.tryParse(hc['lat']),
+                                              lng: double.tryParse(hc['long']),
+                                            );
+                                            Navigator.pop(context);
+                                          }
+                                        },
+                                        icon: Icon(
+                                          Icons.location_searching_outlined,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                      ),
+                                    ))
+                                .toList(),
+                          ),
+                        );
+                      }
+
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(18.0),
+                          child: Text('No data available'),
+                        ),
+                      );
+                    }),
+              );
+            },
+          );
+        },
+        label: const Text('Health Centers'),
+        icon: const Icon(Icons.location_on),
       ),
     );
   }
 
-  Future<void> _goToTheLake() async {
+  Future<void> _goTo({lat = 0, lng = 0}) async {
     final GoogleMapController controller = await _controller.future;
-    await controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
+    CameraPosition location = CameraPosition(
+      bearing: 0,
+      target: LatLng(lat, lng),
+      zoom: 19.151926040649414,
+    );
+    await controller.animateCamera(CameraUpdate.newCameraPosition(location));
   }
 }
