@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
 class ArticleCard extends StatelessWidget {
   const ArticleCard({
@@ -60,7 +60,7 @@ class ArticlePage extends StatelessWidget {
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Html(data: body),
+            child: HtmlWidget(body),
           ),
         ),
       ),
