@@ -36,6 +36,7 @@ dependencies:
   survey_kit: ^0.1.2
   flutter_widget_from_html: ^0.10.2
   google_maps_flutter: ^2.3.1
+  url_launcher: ^6.1.11
 
 
   # The following adds the Cupertino Icons font to your application.

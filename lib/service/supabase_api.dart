@@ -3,6 +3,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class SupabaseApi {
   final supabase = Supabase.instance.client;
 
+  Future<List?> addResponse(Map res) async {
+    return await supabase.from('survey_responses').insert(res);
+  }
+
   Future<List?> getAgeGroups() async {
     return await supabase.from('age_groups').select('*').limit(100);
   }
@@ -24,7 +28,10 @@ class SupabaseApi {
   }
 
   Future<List?> getHealthCenters() async {
-    return await supabase.from('health_centers').select('*,district(name)').limit(100);
+    return await supabase
+        .from('health_centers')
+        .select('*,district(name)')
+        .limit(100);
   }
 
   Future<List?> getQuestions() async {

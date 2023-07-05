@@ -4,6 +4,7 @@ import 'package:ngwiro/home.dart';
 import 'package:ngwiro/service/data_store.dart';
 import 'package:ngwiro/test/results.dart';
 import 'package:ngwiro/test/test.dart';
+import 'package:ngwiro/user_data.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'disclaimer.dart';
@@ -47,10 +48,11 @@ class _NgwiroState extends State<Ngwiro> {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
       ),
-      initialRoute: '/disclaimer',
+      initialRoute: '/',
       routes: {
         '/': (context) => const HomeScreen(),
         '/disclaimer': (context) => const DisclaimerScreen(),
+        '/user_data': (context) => const UserDataScreen(),
         '/test': (context) => const TestScreen(),
         '/results': (context) => const TestResultsScreen(),
       },

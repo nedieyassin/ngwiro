@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:ngwiro/service/data_store.dart';
+import 'package:ngwiro/service/supabase_api.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../map.dart';
 
 class TestResultsScreen extends StatefulWidget {
   const TestResultsScreen({Key? key}) : super(key: key);
@@ -36,6 +40,16 @@ class _TestResultsScreenState extends State<TestResultsScreen> {
     setState(() {
       scoreScale = scale;
     });
+    try {
+      SupabaseApi().addResponse({
+        'score': score,
+        'score_scale': scale['id'],
+        'age_group': store.getUserAge(),
+        'gender': store.getUserGender(),
+      });
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -119,11 +133,22 @@ class _TestResultsScreenState extends State<TestResultsScreen> {
                     return Column(
                       children: ((snap.data ?? []) as List)
                           .map((hc) => ListTile(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const CenterMap()),
+                                  );
+                                },
                                 title: Text(hc['name']),
                                 subtitle: Text(
                                     '${hc['district']['name']} - ${hc['phone_number']}'),
                                 trailing: IconButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    launchUrl(
+                                        Uri.parse('tel:${hc['phone_number']}'));
+                                  },
                                   icon: Icon(
                                     Icons.call,
                                     color: Theme.of(context).primaryColor,

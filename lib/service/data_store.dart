@@ -26,6 +26,22 @@ class DataStore {
     return stateCache.put('disclaimer', true);
   }
 
+  Future<void>  userAge(int age) {
+    return stateCache.put('user_age', age);
+  }
+
+  getUserAge() {
+    return stateCache.get('user_age');
+  }
+
+  Future<void> userGender(int gender) {
+    return stateCache.put('user_gender', gender);
+  }
+
+  getUserGender() {
+    return stateCache.get('user_gender');
+  }
+
   getDisclaimer() {
     return stateCache.get('disclaimer', defaultValue: false);
   }

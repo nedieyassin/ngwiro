@@ -9,7 +9,7 @@ class DisclaimerScreen extends StatefulWidget {
 }
 
 class _DisclaimerScreenState extends State<DisclaimerScreen> {
-  // final DataStore store = DataStore();
+  final DataStore store = DataStore();
 
   @override
   Widget build(BuildContext context) {
@@ -40,9 +40,9 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
                       Theme.of(context).primaryColorLight),
                 ),
                 onPressed: () {
-                  // store.acceptDisclaimer().then((r) {
-                    Navigator.of(context).pushReplacementNamed('/');
-                  // });
+                  store.acceptDisclaimer().then((r) {
+                    Navigator.of(context).pop();
+                  });
                 },
                 child: const Text('Accept and continue'),
               )

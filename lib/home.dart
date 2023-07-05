@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ngwiro/components/cards.dart';
 import 'package:ngwiro/service/data_store.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'map.dart';
 
@@ -17,6 +18,22 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    checkDisclaimer();
+    checkUser();
+  }
+
+  Future<void> checkDisclaimer() async {
+    await Future.delayed(const Duration(seconds: 3));
+    if (!store.getDisclaimer()) {
+      Navigator.of(context).pushNamed('/disclaimer');
+    }
+  }
+
+  Future<void> checkUser() async {
+    await Future.delayed(const Duration(seconds: 2));
+    if (store.getUserAge() == null || store.getUserGender() == null) {
+      Navigator.of(context).pushNamed('/user_data');
+    }
   }
 
   @override
@@ -31,7 +48,8 @@ class _HomeScreenState extends State<HomeScreen> {
               flexibleSpace: const FlexibleSpaceBar(
                 title: Text(
                   'Ngwiro',
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold),
                 ),
               ),
               floating: true,
@@ -40,10 +58,17 @@ class _HomeScreenState extends State<HomeScreen> {
               // elevation: 2,
               actions: [
                 IconButton(
-                    onPressed: () {
-                      Navigator.of(context).pushNamed('/disclaimer');
-                    },
-                    icon: const Icon(Icons.info_outline_rounded)),
+                  onPressed: () {
+                    Navigator.of(context).pushNamed('/disclaimer');
+                  },
+                  icon: const Icon(Icons.info_outline_rounded),
+                ),
+                IconButton(
+                  onPressed: () {
+                    Navigator.of(context).pushNamed('/user_data');
+                  },
+                  icon: const Icon(Icons.settings),
+                ),
               ],
             ),
           ];
@@ -200,14 +225,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                         onTap: () {
                                           Navigator.push(
                                             context,
-                                            MaterialPageRoute(builder: (context) => const CenterMap()),
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const CenterMap()),
                                           );
                                         },
                                         title: Text(hc['name']),
                                         subtitle: Text(
                                             '${hc['district']['name']} - ${hc['phone_number']}'),
                                         trailing: IconButton(
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            launchUrl(Uri.parse('tel:${hc['phone_number']}'));
+                                          },
                                           icon: Icon(
                                             Icons.call,
                                             color:
