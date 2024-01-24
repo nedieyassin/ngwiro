@@ -11,9 +11,8 @@ import 'disclaimer.dart';
 
 Future<void> main() async {
   await Supabase.initialize(
-    url: 'https://sdhnuybbtegesctjqpdx.supabase.co',
-    anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkaG51eWJidGVnZXNjdGpxcGR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzUzMzQyMDQsImV4cCI6MTk5MDkxMDIwNH0.Okiwo2_kf7PNxuZ9ooSM1Pwp5V6-Q_g8_oTsFEbIYNk',
+    url: '',
+    anonKey:'',
   );
   await Hive.initFlutter();
   await Hive.openBox('dataCache');
